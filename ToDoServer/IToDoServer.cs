@@ -20,7 +20,13 @@ namespace ToDoServer
         CompositeType GetDataUsingDataContract(CompositeType composite);
 
         [OperationContract]
-        Array GetTodo(Guid guid);
+        bool InsertData(Guid guid, string Data);
+
+        [OperationContract]
+        List<string> getNotes(Guid guid);
+
+        [OperationContract]
+        bool Register(string Username, string password, string email);
 
         // TODO: Add your service operations here
     }

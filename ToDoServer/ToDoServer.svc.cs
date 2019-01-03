@@ -5,12 +5,14 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using MySql.Data.MySqlClient;
+using System.Diagnostics;
 
 namespace ToDoServer
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
-    // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
-    public class ToDoService : IToDoServer
+
+    
+    public class ToDoServer : IToDoServer
     {
         public string GetData(int value)
         {
@@ -30,9 +32,66 @@ namespace ToDoServer
             return composite;
         }
 
-        public Array GetTodo(Guid guid)
+        public bool InsertData(Guid guid, string Data)
         {
-            return null;
+            bool test = false;
+            MYSql sql = new MYSql();
+            MySqlConnection conn = sql.Createconnection();
+            try
+            {
+                conn.Open();
+
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = conn;
+                cmd.CommandText = "insert into Data(Guid, Data,Date) VALUES (@Guid,@Data,@Time);";
+
+                cmd.Parameters.AddWithValue("@guid", guid.ToString());
+                cmd.Parameters.AddWithValue("@Data", Data);
+                cmd.Parameters.AddWithValue("@Time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                cmd.ExecuteNonQuery();
+                test = true;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                test = false;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return test;
+        }
+
+        public List<string> getNotes(Guid guid)
+        {
+            MYSql sql = new MYSql();
+            MySqlConnection conn = sql.Createconnection();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            cmd.Connection = conn;
+            cmd.CommandText = "select Data from Data where Guid = @Guid;";
+
+            cmd.Parameters.AddWithValue("@Guid", guid.ToString());
+
+            MySqlDataReader dataReader = cmd.ExecuteReader();
+
+            List<string> vs = new List<string>();
+
+            while (dataReader.Read()) vs.Add(dataReader["Data"].ToString());
+
+            return vs;
+        }
+
+        public bool Register(string Username, string password, string email)
+        {
+            SHA Hash = new SHA();
+            string hashPw = Hash.sha256encrypt(password, Username,email);
+            return false;
         }
     }
 }
