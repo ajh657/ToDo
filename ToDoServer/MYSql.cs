@@ -29,6 +29,8 @@ namespace ToDoServer
 
             MySqlCommand cmd = new MySqlCommand();
 
+            conn.Open();
+
             cmd.Connection = conn;
             cmd.CommandText = "SELECT * FROM Data Where Guid = @Guid;";
 
@@ -42,6 +44,30 @@ namespace ToDoServer
             }
 
             return false;
+        }
+
+        public bool UserExists(string username, string email)
+        {
+            MySqlConnection conn = Createconnection();
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            conn.Open();
+
+            cmd.Connection = conn;
+            cmd.CommandText = "select * from Users where username = @username or email = @email;";
+
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.Parameters.AddWithValue("@email", email);
+
+            MySqlDataReader dataReader = cmd.ExecuteReader();
+
+            if (dataReader.HasRows)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

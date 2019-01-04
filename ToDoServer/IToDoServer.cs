@@ -20,7 +20,7 @@ namespace ToDoServer
         CompositeType GetDataUsingDataContract(CompositeType composite);
 
         [OperationContract]
-        bool InsertData(Guid guid, string Data);
+        bool InsertNote(Guid guid, string Data, string Title);
 
         [OperationContract]
         List<string> getNotes(Guid guid);

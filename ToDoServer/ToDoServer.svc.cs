@@ -32,7 +32,7 @@ namespace ToDoServer
             return composite;
         }
 
-        public bool InsertData(Guid guid, string Data)
+        public bool InsertNote(Guid guid, string Data,string Title)
         {
             bool test = false;
             MYSql sql = new MYSql();
@@ -87,10 +87,37 @@ namespace ToDoServer
             return vs;
         }
 
-        public bool Register(string Username, string password, string email)
+        public bool Register(string username, string password, string email)
         {
+            MYSql sql = new MYSql();
+            if (sql.UserExists(username, email)) return false;
             SHA Hash = new SHA();
-            string hashPw = Hash.sha256encrypt(password, Username,email);
+            string hashPw = Hash.sha256encrypt(password, username,email);
+
+            MySqlConnection conn = sql.Createconnection();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            cmd.Connection = conn;
+
+            cmd.CommandText = "insert into Users (guid,username,email,password) values (@guid, @user, @email, @pwd);";
+
+            cmd.Parameters.AddWithValue("@guid", Guid.NewGuid().ToString());
+            cmd.Parameters.AddWithValue("@user", username);
+            cmd.Parameters.AddWithValue("@email", email);
+            cmd.Parameters.AddWithValue("@pwd", hashPw);
+
+            cmd.ExecuteNonQuery();
+
+            return true;
+        }
+
+        public bool Login(string username, string password, string email)
+        {
+            MYSql sql = new MYSql();
+            if (sql.UserExists(username, email)) return false;
             return false;
         }
     }
