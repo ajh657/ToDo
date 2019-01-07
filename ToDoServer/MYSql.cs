@@ -23,7 +23,7 @@ namespace ToDoServer
             return new MySqlConnection(connectionString);
         }
 
-        public bool ValidUser(Guid guid,string password)
+        public bool ValidUser(Guid guid, string password)
         {
             MySqlConnection conn = Createconnection();
 
@@ -68,6 +68,72 @@ namespace ToDoServer
             }
 
             return true;
+        }
+
+        public bool ValidPwd(string password, string username, string email)
+        {
+            MySqlConnection conn = Createconnection();
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            conn.Open();
+
+            SHA hash = new SHA();
+            string PWD = hash.sha256encrypt(password, username, email);
+
+            cmd.Connection = conn;
+            cmd.CommandText = "select * from Users where username = @username and Password = @pwd;";
+
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.Parameters.AddWithValue("@pwd", PWD);
+
+            MySqlDataReader dataReader = cmd.ExecuteReader();
+
+            if (dataReader.HasRows)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool SaveToken(string token,string user)
+        {
+            MYSql sql = new MYSql();
+            MySqlConnection conn = sql.Createconnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = conn;
+            cmd.CommandText = "insert into Token(User,Token) values (@user,@token);";
+
+            cmd.Parameters.AddWithValue("@user", user);
+            cmd.Parameters.AddWithValue("@token", token);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+
+        public bool ValidToken(string token)
+        {
+            MySqlConnection conn = Createconnection();
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            conn.Open();
+
+            cmd.Connection = conn;
+            cmd.CommandText = "select * from Token where Token = @token;";
+
+            cmd.Parameters.AddWithValue("@token", token);
+
+            MySqlDataReader dataReader = cmd.ExecuteReader();
+
+            if (dataReader.HasRows)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

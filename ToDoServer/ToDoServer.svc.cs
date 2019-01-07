@@ -32,10 +32,12 @@ namespace ToDoServer
             return composite;
         }
 
-        public bool InsertNote(Guid guid, string Data,string Title)
+        public bool InsertNote(Guid guid,string token, string Data,string Title)
         {
-            bool test = false;
             MYSql sql = new MYSql();
+            if (!sql.ValidToken(token)) return false;
+            bool test = false;
+            
             MySqlConnection conn = sql.Createconnection();
             try
             {
@@ -64,9 +66,10 @@ namespace ToDoServer
             return test;
         }
 
-        public List<string> getNotes(Guid guid)
+        public List<string> getNotes(Guid guid,string token)
         {
             MYSql sql = new MYSql();
+            if (!sql.ValidToken(token)) return null;
             MySqlConnection conn = sql.Createconnection();
 
             conn.Open();
@@ -114,11 +117,16 @@ namespace ToDoServer
             return true;
         }
 
-        public bool Login(string username, string password, string email)
+        public string Login(string username, string password, string email)
         {
             MYSql sql = new MYSql();
-            if (sql.UserExists(username, email)) return false;
-            return false;
+            if (sql.UserExists(username, email)) return null;
+            if (!sql.ValidPwd(password,username,email)) return null;
+            Guid Token = Guid.NewGuid();
+
+            sql.SaveToken(Token.ToString(),username);
+
+            return Token.ToString();
         }
     }
 }
