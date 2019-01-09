@@ -79,6 +79,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions2.cs" />
     <Compile Include="MYSql.cs" />
     <Compile Include="SHA.cs" />
     <Compile Include="ToDoServer.svc.cs">

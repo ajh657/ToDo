@@ -10,14 +10,12 @@ using System.Diagnostics;
 
 namespace ToDoServer
 {
-
-    
     public class ToDoServer : IToDoServer
     {
         public string GetData(int value)
         {
             return string.Format("You entered: {0}", value);
-        }
+         }
 
         public CompositeType GetDataUsingDataContract(CompositeType composite)
         {
@@ -93,7 +91,7 @@ namespace ToDoServer
         public bool Register(string username, string password, string email)
         {
             MYSql sql = new MYSql();
-            if (sql.UserExists(username, email)) return false;
+            if (!sql.UserExists(username, email)) return false;
             SHA Hash = new SHA();
             string hashPw = Hash.sha256encrypt(password, username,email);
 
@@ -126,7 +124,7 @@ namespace ToDoServer
 
             sql.SaveToken(Token.ToString(),username);
 
-            return Token.ToString();
+            return Token.ToString() + " " + sql.getUserToken(username);
         }
     }
 }

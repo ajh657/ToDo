@@ -122,7 +122,7 @@ namespace ToDoServer
             conn.Open();
 
             cmd.Connection = conn;
-            cmd.CommandText = "select * from Token where Token = @token;";
+            cmd.CommandText = "select Token from Token where Token = @token;";
 
             cmd.Parameters.AddWithValue("@token", token);
 
@@ -134,6 +134,30 @@ namespace ToDoServer
             }
 
             return false;
+        }
+
+        public string getUserToken(string username)
+        {
+            MySqlConnection conn = Createconnection();
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            conn.Open();
+
+            cmd.Connection = conn;
+            cmd.CommandText = "select Guid from Users where username = @user;";
+
+            cmd.Parameters.AddWithValue("@user", username);
+
+            MySqlDataReader dataReader = cmd.ExecuteReader();
+
+            if (dataReader.HasRows)
+            {
+                dataReader.Read();
+                return dataReader.GetString(0);
+            }
+
+            return null;
         }
     }
 }
